@@ -16,7 +16,7 @@ from kronos_rest.serializers import CiudadSerializer, TiendaSerializer, UsuarioS
 """ 
 Vista del endpoint GET para obtener todos los usuarios de una tienda
 """
-class user_list_by_shop(mixins.RetrieveModelMixin, generics.GenericAPIView):
+class user_list_by_shop(generics.ListAPIView):
     serializer_class = UsuarioSerializer
     lookup_field = "pk"
 
@@ -28,40 +28,37 @@ class user_list_by_shop(mixins.RetrieveModelMixin, generics.GenericAPIView):
 
         except Tienda.DoesNotExist:
             raise Http404
-        
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
 
 """
 Vista del endpoint GET para obtener todos las tiendas a las que esta asociado un usuario
 """
-class shop_list_by_user(mixins.RetrieveModelMixin, generics.GenericAPIView):
+class shop_list_by_user(generics.ListAPIView):
     serializer_class = TiendaSerializer
     lookup_url_kwarg = "pk"
 
     def get_queryset(self):
         pk = self.kwargs.get(self.lookup_url_kwarg)
         shops = Tienda.objects.filter(users__id=pk)
-        return shops
-
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+        if not shops:
+            raise Http404
+        else:
+            return shops
 
 
 """
 Vista del endpoint GET para obtener las tiendas de una ciudad a las que esta asociado un
 usuario.
 """
-class shop_list_from_city_by_user(mixins.RetrieveModelMixin, generics.GenericAPIView):
+class shop_list_from_city_by_user(generics.ListAPIView):
     serializer_class = TiendaSerializer
-    lookup_field = 'city_id'
+    lookup_url_kwarg = 'city_id'
     slug_field = 'userPk'
 
     def get_queryset(self):
-        cityId = self.kwargs.get(self.lookup_field)
+        cityId = self.kwargs.get(self.lookup_url_kwarg)
         userId = self.kwargs.get(self.slug_field)
         shops = Tienda.objects.filter(city_id=cityId).filter(users__id=userId)
-        return shops
-
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+        if not shops:
+            raise Http404
+        else:
+            return shops

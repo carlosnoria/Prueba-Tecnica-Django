@@ -9,7 +9,8 @@ Se evito la creacion de un modelo relacional intermedio para cumplir
 de una manera mas sencilla y eficiente con los requerimientos.
 
 Se considero que la clase 'Ciudad' bastaba con que tuviese nombre y 
-una clave primaria autoincremental 'id'.
+una clave primaria autoincremental 'id' y el nombre de dicha ciudad se
+coloco como unico.
 
 La clase 'Usuario' posee los 3 datos fundamentales para representar a una
 persona como lo son el nombre, el apellido y el documento de identidad
@@ -33,7 +34,7 @@ ni eliminacion.
 from django.db import models
 
 class Ciudad(models.Model):
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=30, unique=True)
 
     class Meta:
         ordering = ["name"]
