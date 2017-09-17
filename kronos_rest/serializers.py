@@ -1,3 +1,12 @@
+"""
+Prueba Tecnica Kronos
+Autor: Carlos Noria
+
+Los serializadores se implementaron partiendo de los 'ModelSerializers'
+para ahorrar tiempo de codificacion y permitirle a la API REST trabajar
+bajo la maxima optimizacion que garantiza rest_framework.
+"""
+
 from rest_framework import serializers
 from kronos_rest.models import Ciudad, Tienda, Usuario
 

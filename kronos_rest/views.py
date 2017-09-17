@@ -1,3 +1,10 @@
+"""
+Prueba Tecnica Kronos
+Autor: Carlos Noria
+
+Se decidio Utilizar vistas basadas en clases porque hacen a la 
+API REST mas facil de mantener y de comprender.
+"""
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -6,6 +13,9 @@ from rest_framework import generics, mixins
 from kronos_rest.models import Ciudad, Tienda, Usuario
 from kronos_rest.serializers import CiudadSerializer, TiendaSerializer, UsuarioSerializer
 
+""" 
+Vista del endpoint GET para obtener todos los usuarios de una tienda
+"""
 class user_list_by_shop(mixins.RetrieveModelMixin, generics.GenericAPIView):
     serializer_class = UsuarioSerializer
     lookup_field = "pk"
@@ -22,7 +32,9 @@ class user_list_by_shop(mixins.RetrieveModelMixin, generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
-
+"""
+Vista del endpoint GET para obtener todos las tiendas a las que esta asociado un usuario
+"""
 class shop_list_by_user(mixins.RetrieveModelMixin, generics.GenericAPIView):
     serializer_class = TiendaSerializer
     lookup_url_kwarg = "pk"
@@ -35,6 +47,11 @@ class shop_list_by_user(mixins.RetrieveModelMixin, generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
+
+"""
+Vista del endpoint GET para obtener las tiendas de una ciudad a las que esta asociado un
+usuario.
+"""
 class shop_list_from_city_by_user(mixins.RetrieveModelMixin, generics.GenericAPIView):
     serializer_class = TiendaSerializer
     lookup_field = 'city_id'
