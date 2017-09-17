@@ -1,54 +1,50 @@
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.http import Http404
+from rest_framework import generics, mixins
 from kronos_rest.models import Ciudad, Tienda, Usuario
 from kronos_rest.serializers import CiudadSerializer, TiendaSerializer, UsuarioSerializer
 
-@api_view(['GET'])
-def user_list_by_shop(request, pk):
-    try:
-        shop = Tienda.objects.get(id=pk)
+class user_list_by_shop(mixins.RetrieveModelMixin, generics.GenericAPIView):
+    serializer_class = UsuarioSerializer
+    lookup_field = "pk"
 
-    except Tienda.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    def get_queryset(self):
+        pk = self.kwargs.get(self.lookup_field)
+        try:
+            shop = Tienda.objects.get(id=pk)
+            return shop.users
 
-    if request.method == 'GET':
-        users = shop.users
-        serializer = UsuarioSerializer(users, many=True)
-        return Response(serializer.data)
+        except Tienda.DoesNotExist:
+            raise Http404
+        
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
 
-    else:
-        pass
 
-@api_view(['GET'])
-def shop_list_by_user(request, pk):
-    try:
-       user = Usuario.objects.get(id=pk)
+class shop_list_by_user(mixins.RetrieveModelMixin, generics.GenericAPIView):
+    serializer_class = TiendaSerializer
+    lookup_url_kwarg = "pk"
 
-    except Usuario.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET': 
+    def get_queryset(self):
+        pk = self.kwargs.get(self.lookup_url_kwarg)
         shops = Tienda.objects.filter(users__id=pk)
-        serializer = TiendaSerializer(shops, many=True)
-        return Response(serializer.data)
+        return shops
 
-    else:
-        pass
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
 
-@api_view(['GET'])
-def shop_list_from_city_by_user(request, cityPk, userPk):
-    try:
-        city = Ciudad.objects.get(id=cityPk)
-        user = Usuario.objects.get(id=userPk)
+class shop_list_from_city_by_user(mixins.RetrieveModelMixin, generics.GenericAPIView):
+    serializer_class = TiendaSerializer
+    lookup_field = 'city_id'
+    slug_field = 'userPk'
 
-    except (Ciudad.DoesNotExist, Usuario.DoesNotExist):
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    def get_queryset(self):
+        cityId = self.kwargs.get(self.lookup_field)
+        userId = self.kwargs.get(self.slug_field)
+        shops = Tienda.objects.filter(city_id=cityId).filter(users__id=userId)
+        return shops
 
-    if request.method == 'GET':
-        shops = Tienda.objects.filter(city_id=cityPk).filter(users__id=userPk)
-        serializer = TiendaSerializer(shops, many=True)
-        return Response(serializer.data)
-
-    else:
-        pass
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)

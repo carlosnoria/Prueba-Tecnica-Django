@@ -18,7 +18,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from kronos_rest import views
 
 urlpatterns = [
-    url(r'^kronos_rest/tienda/(?P<pk>[0-9]+)$', views.user_list_by_shop),
-    url(r'^kronos_rest/usuario/(?P<pk>[0-9]+)$', views.shop_list_by_user),
-    url(r'^kronos_rest/ciudad/(?P<cityPk>[0-9]+)/usuario/(?P<userPk>[0-9]+)$', views.shop_list_from_city_by_user),
+    url(r'^kronos_rest/tienda/(?P<pk>[0-9]+)$', views.user_list_by_shop.as_view()),
+    url(r'^kronos_rest/usuario/(?P<pk>[0-9]+)$', views.shop_list_by_user.as_view()),
+    url(r'^kronos_rest/ciudad/(?P<city_id>[0-9]+)/usuario/(?P<userPk>[0-9]+)$', views.shop_list_from_city_by_user.as_view()),
 ]
